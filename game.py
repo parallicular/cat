@@ -8,7 +8,7 @@ FPS = 60
 
 class Cat:
     def __init__(self) -> None:
-        self.image = pygame.image.load("images/cat/walk1.png")
+        self.image = pygame.image.load("images/cat/walk/1.png")
         self.image = pygame.transform.scale(self.image, (64, 64))
         self.position = {
             "x": SCREEN_WIDTH // 2,
@@ -55,7 +55,8 @@ def run_game(game):
             game["cat"].position["y"] -= 4
         if pressed_keys[pygame.K_DOWN]:
             game["cat"].position["y"] += 4
-
+        if pressed_keys[pygame.K_ESCAPE]:
+            running = False
 
         screen.blit(game["images"]["background"], (0, 0))
         game["cat"].draw(screen)
