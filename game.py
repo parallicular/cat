@@ -25,7 +25,7 @@ class Cat:
         self.images = {}
         self.load_animation("walk", 8)
         self.load_animation("run", 5)
-        self.load_animation("jump", 7)
+        self.load_animation("jump", 5)
     
     def load_animation(self, name, frame_count):
         images = []
@@ -39,7 +39,7 @@ class Cat:
         for event in events:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not self.jumping:
                 self.jumping = True
-                self.velocity_y = -20
+                self.velocity_y = -15
                 self.current_animation = "jump"
                 self.current_frame = 0
                 self.frame_counter = 0
