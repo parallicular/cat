@@ -32,6 +32,16 @@ class Cat:
             image = pygame.transform.scale(image, (100, 100))
             images.append(image)
         return images
+    
+    def handle_pressed_keys(self, pressed_keys):
+        if pressed_keys[pygame.K_RIGHT]:
+            self.position["x"] += 4
+        if pressed_keys[pygame.K_LEFT]:
+            self.position["x"] -= 4
+        if pressed_keys[pygame.K_UP]:
+            self.position["y"] -= 4
+        if pressed_keys[pygame.K_DOWN]:
+            self.position["y"] += 4
 
     def draw(self, screen):
         position_tuple = (self.position["x"], self.position["y"])
@@ -70,37 +80,31 @@ class Game:
         self.background = Background()
         self.cat = Cat()
 
-    
-def run_game(game):
-    running = True
-    screen: pygame.Surface = game.screen
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+    def draw(self, screen):
+        self.background.draw(screen)
+        self.cat.draw(screen)
+
+    def run(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    
+            pressed_keys = pygame.key.get_pressed()
+            self.cat.handle_pressed_keys(pressed_keys)
+            if pressed_keys[pygame.K_ESCAPE]:
                 running = False
-                
-        pressed_keys = pygame.key.get_pressed()
-        if pressed_keys[pygame.K_RIGHT]:
-            game.cat.position["x"] += 4
-        if pressed_keys[pygame.K_LEFT]:
-            game.cat.position["x"] -= 4
-        if pressed_keys[pygame.K_UP]:
-            game.cat.position["y"] -= 4
-        if pressed_keys[pygame.K_DOWN]:
-            game.cat.position["y"] += 4
-        if pressed_keys[pygame.K_ESCAPE]:
-            running = False
 
-        game.background.draw(screen)
-        game.cat.draw(screen)
+            self.draw(self.screen)
 
-        pygame.display.flip()
-        game.clock.tick(FPS)
+            pygame.display.flip()
+            self.clock.tick(FPS)
 
 
 def main():
     game = Game()
-    run_game(game)
+    game.run()
     pygame.quit()
 
 
