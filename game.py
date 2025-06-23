@@ -11,6 +11,7 @@ class Cat:
         self.images = self.load_images()
         self.current_frame = 0
         self.frame_counter = 0
+        self.current_animation = "jump"
         
         self.position = {
             "x": SCREEN_WIDTH // 2,
@@ -18,19 +19,29 @@ class Cat:
         }
         
     def load_images(self):
+        images = {}
+        images["walk"] = self.load_animation("walk", 8)
+        images["run"] = self.load_animation("run", 5)
+        images["jump"] = self.load_animation("jump", 7)
+        return images
+    
+    def load_animation(self, name, frame_count):
         images = []
-        for i in range(1, 8 + 1):
-            image = pygame.image.load(f"images/cat/walk/{i}.png")
-            image = pygame.transform.scale(image, (84, 84))
+        for i in range(1, frame_count + 1):
+            image = pygame.image.load(f"images/cat/{name}/{i}.png")
+            image = pygame.transform.scale(image, (100, 100))
             images.append(image)
         return images
 
     def draw(self, screen):
         position_tuple = (self.position["x"], self.position["y"])
-        screen.blit(self.images[self.current_frame], position_tuple)
+        
+        image = self.images[self.current_animation][self.current_frame]
+        
+        screen.blit(image, position_tuple)
         self.frame_counter += 1
         if self.frame_counter > 8:
-            self.current_frame = (self.current_frame + 1) % len(self.images)
+            self.current_frame = (self.current_frame + 1) % len(self.images[self.current_animation])
             self.frame_counter = 0
 
 
