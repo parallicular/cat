@@ -99,9 +99,9 @@ class Game:
         self.background = Background()
         self.cat = Cat()
 
-    def draw(self, screen):
-        self.background.draw(screen)
-        self.cat.draw(screen)
+    def draw(self):
+        self.background.draw(self.screen)
+        self.cat.draw(self.screen)
 
     def run(self):
         running = True
@@ -117,7 +117,7 @@ class Game:
             if pressed_keys[pygame.K_ESCAPE]:
                 running = False
 
-            self.draw(self.screen)
+            self.draw()
 
             pygame.display.flip()
             self.clock.tick(FPS)
