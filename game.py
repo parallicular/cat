@@ -2,6 +2,7 @@ import pygame
 from cat import Cat
 from background import Background
 from block import Block
+from random import random
 
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 800
@@ -44,6 +45,13 @@ class Game:
             new_pos = pygame.Vector2(self.generated_until, GROUND_LEVEL)
             new_block = Block(new_pos)
             self.blocks.append(new_block)
+            
+            if random() < 0.05:
+                row_index = int(7 * random())
+                new_pos = pygame.Vector2(self.generated_until, BLOCK_SIZE * row_index)
+                new_block = Block(new_pos)
+                self.blocks.append(new_block)
+
             self.generated_until += BLOCK_SIZE
         
         self.background.update(self.scroll_speed)

@@ -11,7 +11,8 @@ class Cat:
         self.velocity_y = 0
         self.jumping = False
         self.position = position
-        self.ground_level = position.y
+        self.rect = pygame.Rect(position[0], position[1], 100, 100)
+        self.ground_level = self.rect.top
         
     def handle_events(self, events):
         for event in events:
@@ -45,9 +46,13 @@ class Cat:
             self.velocity_y = 0
             self.jumping = False
             self.set_animation("run")
+        
+        self.rect.left = int(self.position.x)
+        self.rect.top = int(self.position.y)
 
     def draw(self, screen):
-        self.current_animation.draw(screen, self.position)
+        self.current_animation.draw(screen, self.rect)
+        pygame.draw.rect(screen, "white", self.rect, 1)
 
 
 class Animation:
@@ -68,11 +73,11 @@ class Animation:
         self.current_frame = 0
         self.frame_counter = 0
         
-    def draw(self, screen, position):
+    def draw(self, screen, rect):
         
         image = self.images[self.current_frame]
         
-        screen.blit(image, position)
+        screen.blit(image, rect)
 
         self.frame_counter += 1
         if self.frame_counter > self.delay:
