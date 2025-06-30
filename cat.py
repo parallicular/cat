@@ -2,7 +2,7 @@ import pygame
 
 
 class Cat:
-    def __init__(self, position) -> None:
+    def __init__(self, position: pygame.Vector2) -> None:
         self.load_images()
         self.current_frame = 0
         self.frame_counter = 0
@@ -10,7 +10,7 @@ class Cat:
         self.velocity_y = 0
         self.jumping = False
         self.position = position
-        self.ground_level = position["y"]
+        self.ground_level = position.y
         
     def load_images(self):
         self.images = {}
@@ -37,23 +37,23 @@ class Cat:
     
     def handle_pressed_keys(self, pressed_keys):
         if pressed_keys[pygame.K_RIGHT]:
-            self.position["x"] += 4
+            self.position.x += 4
         if pressed_keys[pygame.K_LEFT]:
-            self.position["x"] -= 4
+            self.position.x -= 4
 
     def draw(self, screen):
-        self.position["y"] += self.velocity_y
-        if self.position["y"] < self.ground_level:
+        self.position.y += self.velocity_y
+        if self.position.y < self.ground_level:
             self.velocity_y += 1
         elif self.velocity_y != 0:
-            self.position["y"] = self.ground_level
+            self.position.y = self.ground_level
             self.velocity_y = 0
             self.jumping = False
             self.current_animation = "run"
             self.current_frame = 0
             self.frame_counter = 0
             
-        position_tuple = (self.position["x"], self.position["y"])
+        position_tuple = (self.position.x, self.position.y)
         
         image = self.images[self.current_animation][self.current_frame]
         

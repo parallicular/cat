@@ -1,11 +1,12 @@
 import pygame
 from cat import Cat
 from background import Background
+from block import Block
 
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 800
 FPS = 60
-GROUND_LEVEL = 600
+GROUND_LEVEL = 700
 
 
 class Game:
@@ -15,13 +16,25 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.background = Background()
-        self.cat = Cat({
-            "x": SCREEN_WIDTH // 2,
-            "y": GROUND_LEVEL
-        })
+        self.blocks = self.create_blocks()
+        cat_pos: pygame.Vector2 = pygame.Vector2(SCREEN_WIDTH // 2, GROUND_LEVEL - 100)
+        self.cat = Cat(cat_pos)
+        
+    def create_blocks(self):
+        blocks: list[Block] = []
+        offset_x = 0
+        while offset_x < self.screen.get_width():
+            position = pygame.Vector2(offset_x, GROUND_LEVEL)
+            block = Block(position)
+            blocks.append(block)
+            offset_x += 100
+
+        return blocks
 
     def draw(self):
         self.background.draw(self.screen)
+        for block in self.blocks:
+            block.draw(self.screen)
         self.cat.draw(self.screen)
 
     def run(self):
