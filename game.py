@@ -22,6 +22,7 @@ class Game:
         self.cat = Cat(cat_pos)
         self.scroll_offset = 0.0
         self.generated_until = float(self.screen.get_width())
+        self.scroll_speed = -0.1
         
     def create_blocks(self):
         blocks: list[Block] = []
@@ -34,23 +35,24 @@ class Game:
         return blocks
     
     def update(self):
-        scroll_speed = -0.4
+        self.scroll_speed -= 0.01
+        self.scroll_speed = max(self.scroll_speed, -10)
         
         # generate world
-        self.generated_until += scroll_speed
+        self.generated_until += self.scroll_speed
         if self.generated_until < self.screen.get_width():
             new_pos = pygame.Vector2(self.generated_until, GROUND_LEVEL)
             new_block = Block(new_pos)
             self.blocks.append(new_block)
             self.generated_until += BLOCK_SIZE
         
-        self.background.update(scroll_speed)
+        self.background.update(self.scroll_speed)
         new_blocks = []
         for block in self.blocks:
-            if block.update(scroll_speed):
+            if block.update(self.scroll_speed):
                 new_blocks.append(block)
         self.blocks = new_blocks
-        self.cat.update(scroll_speed)
+        self.cat.update(self.scroll_speed)
 
     def draw(self):
         self.background.draw(self.screen)
