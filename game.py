@@ -36,8 +36,8 @@ class Game:
         return blocks
     
     def update(self):
-        self.scroll_speed -= 0.01
-        self.scroll_speed = max(self.scroll_speed, -10)
+        self.scroll_speed -= 0.003
+        self.scroll_speed = max(self.scroll_speed, -12)
         
         # generate world
         self.generated_until += self.scroll_speed
