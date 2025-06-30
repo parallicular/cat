@@ -21,6 +21,9 @@ class Cat:
                 self.set_animation("jump")
                 
     def set_animation(self, name):
+        if self.current_animation.name == name:
+            return
+
         self.current_animation = self.animations[name]
         self.current_animation.reset()
     
@@ -30,7 +33,10 @@ class Cat:
         if pressed_keys[pygame.K_LEFT]:
             self.position.x -= 4
             
-    def update(self, _scroll_speed):
+    def update(self, scroll_speed):
+        if scroll_speed < -2.0:
+            self.set_animation("run")
+
         self.position.y += self.velocity_y
         if self.position.y < self.ground_level:
             self.velocity_y += 1
