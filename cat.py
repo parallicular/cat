@@ -40,8 +40,8 @@ class Cat:
             self.position.x += 4
         if pressed_keys[pygame.K_LEFT]:
             self.position.x -= 4
-
-    def draw(self, screen):
+            
+    def update(self, _scroll_speed):
         self.position.y += self.velocity_y
         if self.position.y < self.ground_level:
             self.velocity_y += 1
@@ -52,12 +52,11 @@ class Cat:
             self.current_animation = "run"
             self.current_frame = 0
             self.frame_counter = 0
-            
-        position_tuple = (self.position.x, self.position.y)
-        
+
+    def draw(self, screen):
         image = self.images[self.current_animation][self.current_frame]
         
-        screen.blit(image, position_tuple)
+        screen.blit(image, self.position)
         self.frame_counter += 1
         if self.frame_counter > 7:
             self.current_frame = (self.current_frame + 1) % len(self.images[self.current_animation])

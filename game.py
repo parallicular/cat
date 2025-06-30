@@ -7,6 +7,7 @@ SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 800
 FPS = 60
 GROUND_LEVEL = 700
+BLOCK_SIZE = 100
 
 
 class Game:
@@ -17,8 +18,10 @@ class Game:
         self.clock = pygame.time.Clock()
         self.background = Background()
         self.blocks = self.create_blocks()
-        cat_pos: pygame.Vector2 = pygame.Vector2(SCREEN_WIDTH // 2, GROUND_LEVEL - 100)
+        cat_pos: pygame.Vector2 = pygame.Vector2(SCREEN_WIDTH // 2, GROUND_LEVEL - BLOCK_SIZE)
         self.cat = Cat(cat_pos)
+        self.scroll_offset = 0.0
+        self.generated_until = float(self.screen.get_width())
         
     def create_blocks(self):
         blocks: list[Block] = []
@@ -27,9 +30,27 @@ class Game:
             position = pygame.Vector2(offset_x, GROUND_LEVEL)
             block = Block(position)
             blocks.append(block)
-            offset_x += 100
-
+            offset_x += BLOCK_SIZE
         return blocks
+    
+    def update(self):
+        scroll_speed = -0.4
+        
+        # generate world
+        self.generated_until += scroll_speed
+        if self.generated_until < self.screen.get_width():
+            new_pos = pygame.Vector2(self.generated_until, GROUND_LEVEL)
+            new_block = Block(new_pos)
+            self.blocks.append(new_block)
+            self.generated_until += BLOCK_SIZE
+        
+        self.background.update(scroll_speed)
+        new_blocks = []
+        for block in self.blocks:
+            if block.update(scroll_speed):
+                new_blocks.append(block)
+        self.blocks = new_blocks
+        self.cat.update(scroll_speed)
 
     def draw(self):
         self.background.draw(self.screen)
@@ -50,6 +71,8 @@ class Game:
             self.cat.handle_pressed_keys(pressed_keys)
             if pressed_keys[pygame.K_ESCAPE]:
                 running = False
+
+            self.update()
 
             self.draw()
 

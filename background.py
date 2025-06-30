@@ -5,10 +5,11 @@ class Background:
     def __init__(self):
         self.image = pygame.image.load("images/small.png")
         self.x = 0
+        
+    def update(self, scroll_speed):
+        self.x += scroll_speed
     
     def draw(self, screen):
-        self.x -= 1
-        
         offset_y = 0
         while offset_y < screen.get_height():
             offset_x = self.x
