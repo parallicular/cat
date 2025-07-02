@@ -9,7 +9,7 @@ class Background:
     def update(self, scroll_speed):
         self.x += scroll_speed
     
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface):
         offset_y = 0
         while offset_y < screen.get_height():
             offset_x = self.x

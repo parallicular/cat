@@ -1,5 +1,6 @@
 import pygame
 
+
 class Cat:
     def __init__(self, position: pygame.Vector2) -> None:
         self.animations = {
@@ -14,27 +15,27 @@ class Cat:
         self.rect = pygame.Rect(position[0], position[1], 100, 100)
         self.ground_level = self.rect.top
         
-    def handle_events(self, events):
+    def handle_events(self, events: list[pygame.event.Event]):
         for event in events:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not self.jumping:
                 self.jumping = True
                 self.velocity_y = -25
                 self.set_animation("jump")
                 
-    def set_animation(self, name):
+    def set_animation(self, name: str):
         if self.current_animation.name == name:
             return
 
         self.current_animation = self.animations[name]
         self.current_animation.reset()
     
-    def handle_pressed_keys(self, pressed_keys):
+    def handle_pressed_keys(self, pressed_keys: pygame.key.ScancodeWrapper):
         if pressed_keys[pygame.K_RIGHT]:
             self.position.x += 4
         if pressed_keys[pygame.K_LEFT]:
             self.position.x -= 4
             
-    def update(self, scroll_speed):
+    def update(self, scroll_speed: float):
         if scroll_speed < -2.0:
             self.set_animation("run")
 
@@ -50,13 +51,13 @@ class Cat:
         self.rect.left = int(self.position.x)
         self.rect.top = int(self.position.y)
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface):
         self.current_animation.draw(screen, self.rect)
         pygame.draw.rect(screen, "white", self.rect, 1)
 
 
 class Animation:
-    def __init__(self, name, frame_count, delay) -> None:
+    def __init__(self, name: str, frame_count: int, delay: int) -> None:
         self.name = name
         self.current_frame = 0
         self.frame_counter = 0
@@ -73,7 +74,7 @@ class Animation:
         self.current_frame = 0
         self.frame_counter = 0
         
-    def draw(self, screen, rect):
+    def draw(self, screen: pygame.Surface, rect: pygame.Rect):
         
         image = self.images[self.current_frame]
         
