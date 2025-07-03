@@ -1,10 +1,11 @@
 import pygame
-from gameEntity import Obstacle
+from pygame import Rect, Vector2
+from gameEntity import Obstacle, Block
 from animation import Animation
 
 
 class Cat:
-    def __init__(self, position: pygame.Vector2) -> None:
+    def __init__(self, position: Vector2) -> None:
         self.animations = {
             "walk": Animation("walk", 8, 7),
             "run": Animation("run", 5, 7),
@@ -17,7 +18,7 @@ class Cat:
         self.jumping = False
         self.in_air = False
         self.position = position
-        self.rect = pygame.Rect(position[0], position[1], 100, 100)
+        self.rect = Rect(position[0], position[1], 100, 100)
         self.ground_level = self.rect.top
         self.alive = True
         self.sounds = {
@@ -32,15 +33,16 @@ class Cat:
         self.current_animation = self.animations[name]
         self.current_animation.reset()
     
-    def update(self, scroll_speed: float, obstacles: list[Obstacle]):
+    def update(self, scroll_speed: float, obstacles: list[Obstacle], blocks: list[Block]):
         if scroll_speed < -2.0:
             self.set_animation("run")
 
+        dx = 0
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[pygame.K_RIGHT]:
-            self.position.x += 6
+            dx += 6
         if pressed_keys[pygame.K_LEFT]:
-            self.position.x -= 6
+            dx -= 6
             
         if not self.jumping and not self.in_air:
             if pressed_keys[pygame.K_SPACE]:
@@ -52,7 +54,7 @@ class Cat:
                 self.velocity_y = -24
                 self.set_animation("jump")
 
-        self.position.x += scroll_speed
+        dx += scroll_speed
 
         self.position.y += self.velocity_y
         if self.position.y < self.ground_level:
@@ -68,7 +70,13 @@ class Cat:
                 self.sounds["oof"].play()
                 self.set_animation("dead")
                 self.alive = False
-                
+
+        new_rect = Rect(self.position.x + dx, self.position.y, self.rect.width, self.rect.height)
+        for block in blocks:
+            if new_rect.colliderect(block.rect):
+                dx = block.rect.left - self.rect.right
+
+        self.position.x += dx
         self.rect.left = int(self.position.x)
         self.rect.top = int(self.position.y)
 

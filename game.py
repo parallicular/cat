@@ -19,6 +19,8 @@ class Game:
         pygame.mixer.music.load("sounds/ruins.mp3")
         pygame.mixer.music.set_volume(0.3)
         pygame.mixer.music.play()
+        pygame.mixer.music.pause()
+        self.music_paused = True
 
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
@@ -42,8 +44,14 @@ class Game:
             position = pygame.Vector2(self.generated_until, GROUND_LEVEL)
             block = Block(position)
             self.blocks.append(block)
+            
+            if random() < 0.3:
+                position = pygame.Vector2(self.generated_until, GROUND_LEVEL - BLOCK_SIZE)
+                block = Block(position)
+                self.blocks.append(block)
+                
             self.generated_until += BLOCK_SIZE
-            if random() < self.fireball_chance:
+            if random() < self.fireball_chance/10000.0:
                 row_index = int(7 - abs(7 * (random() + random()) - 7))
                 new_pos = pygame.Vector2(self.generated_until, BLOCK_SIZE * row_index)
                 new_obstacle = Obstacle(new_pos)
@@ -58,7 +66,7 @@ class Game:
         
         self.generate_world()
         
-        self.cat.update(self.scroll_speed, self.obstacles)
+        self.cat.update(self.scroll_speed, self.obstacles, self.blocks)
 
     def draw(self):
         self.background.draw(self.screen, self.scroll_offset)
@@ -79,6 +87,12 @@ class Game:
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[pygame.K_ESCAPE]:
                 running = False
+            if pressed_keys[pygame.K_m]:
+                if self.music_paused:
+                    pygame.mixer.music.unpause()
+                else:
+                    pygame.mixer.music.pause()
+                self.music_paused = not self.music_paused
 
             if self.cat.alive:
                 self.update()
