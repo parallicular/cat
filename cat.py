@@ -14,7 +14,11 @@ class Cat:
         self.position = position
         self.rect = pygame.Rect(position[0], position[1], 100, 100)
         self.ground_level = self.rect.top
-        
+        self.sounds = {
+            "oof": pygame.mixer.Sound("sounds/oof.mp3")
+        }
+        self.sounds["oof"].set_volume(0.5)
+
     def handle_events(self, events: list[pygame.event.Event]):
         for event in events:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not self.jumping:
@@ -45,6 +49,7 @@ class Cat:
         elif self.velocity_y != 0:
             self.position.y = self.ground_level
             self.velocity_y = 0
+            self.sounds["oof"].play()
             self.jumping = False
             self.set_animation("run")
         
@@ -53,7 +58,7 @@ class Cat:
 
     def draw(self, screen: pygame.Surface):
         self.current_animation.draw(screen, self.rect)
-        pygame.draw.rect(screen, "white", self.rect, 1)
+        # pygame.draw.rect(screen, "white", self.rect, 1)
 
 
 class Animation:

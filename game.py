@@ -14,12 +14,15 @@ BLOCK_SIZE = 100
 class Game:
     def __init__(self) -> None:
         pygame.init()
+        pygame.mixer.init()
+        pygame.mixer.music.load("sounds/ruins.mp3")
+        # pygame.mixer.music.play()
 
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.background = Background()
         self.blocks = self.create_blocks()
-        cat_pos: pygame.Vector2 = pygame.Vector2(SCREEN_WIDTH // 2, GROUND_LEVEL - BLOCK_SIZE)
+        cat_pos: pygame.Vector2 = pygame.Vector2(SCREEN_WIDTH // 4, GROUND_LEVEL - BLOCK_SIZE)
         self.cat = Cat(cat_pos)
         self.scroll_offset = 0.0
         self.generated_until = float(self.screen.get_width())
