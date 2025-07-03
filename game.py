@@ -19,8 +19,6 @@ class Game:
         pygame.mixer.music.load("sounds/ruins.mp3")
         pygame.mixer.music.set_volume(0.3)
         pygame.mixer.music.play()
-        pygame.mixer.music.pause()
-        self.music_paused = True
 
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
@@ -90,12 +88,6 @@ class Game:
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[pygame.K_ESCAPE]:
                 running = False
-            if pressed_keys[pygame.K_m]:
-                if self.music_paused:
-                    pygame.mixer.music.unpause()
-                else:
-                    pygame.mixer.music.pause()
-                self.music_paused = not self.music_paused
 
             if self.cat.alive:
                 self.update()
