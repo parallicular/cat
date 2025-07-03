@@ -34,7 +34,8 @@ class Game:
         self.scroll_offset = 0.0
         self.scroll_speed = 0.1
         self.generated_until = 0
-        self.fireball_chance = 0.5
+        self.block_chance = 0.1
+        self.fireball_chance = 0.01
         
         self.blocks: list[Block] = []
         self.generate_world()
@@ -45,18 +46,20 @@ class Game:
             block = Block(position)
             self.blocks.append(block)
             
-            if random() < 0.3:
-                position = pygame.Vector2(self.generated_until, GROUND_LEVEL - BLOCK_SIZE)
+            if random() < self.block_chance:
+                row_index = int(7 - abs(7 * (random() + random()) - 7))
+                position = pygame.Vector2(self.generated_until, BLOCK_SIZE * row_index)
                 block = Block(position)
                 self.blocks.append(block)
                 
-            self.generated_until += BLOCK_SIZE
-            if random() < self.fireball_chance/10000.0:
+            elif random() < self.fireball_chance:
                 row_index = int(7 - abs(7 * (random() + random()) - 7))
                 new_pos = pygame.Vector2(self.generated_until, BLOCK_SIZE * row_index)
                 new_obstacle = Obstacle(new_pos)
                 self.obstacles.append(new_obstacle)
             self.fireball_chance = min(0.2, self.fireball_chance + 0.001)
+            
+            self.generated_until += BLOCK_SIZE
 
     def update(self):
         self.scroll_speed += 0.003

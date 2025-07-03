@@ -51,40 +51,62 @@ class Cat:
                 self.set_animation("highjump")
             if pressed_keys[pygame.K_UP]:
                 self.jumping = True
-                self.velocity_y = -24
+                self.velocity_y = -22
                 self.set_animation("jump")
 
         dx += scroll_speed
 
-        self.position.y += self.velocity_y
-        if self.position.y < self.ground_level:
-            self.velocity_y += 1
-        elif self.velocity_y != 0:
-            self.position.y = self.ground_level
-            self.velocity_y = 0
-            self.jumping = False
-            self.set_animation("run")
+        dy = self.velocity_y
+        
+        self.velocity_y += 1
         
         for obstacle in obstacles:
             if self.rect.colliderect(obstacle.rect):
-                self.sounds["oof"].play()
-                self.set_animation("dead")
-                self.alive = False
+                self.die()
 
         new_rect = Rect(self.position.x + dx, self.position.y, self.rect.width, self.rect.height)
         for block in blocks:
             if new_rect.colliderect(block.rect):
-                dx = block.rect.left - self.rect.right
+                if new_rect.centerx < block.rect.centerx:
+                    dx = block.rect.left - self.rect.right
+                else:
+                    dx = block.rect.right - self.rect.left
+
+        self.in_air = True
+        new_rect = Rect(self.position.x, self.position.y + dy, self.rect.width, self.rect.height)
+        for block in blocks:
+            if new_rect.colliderect(block.rect):
+                if new_rect.centery < block.rect.centery:
+                    # we are above the block
+                    dy = block.rect.top - self.rect.bottom
+                    self.velocity_y = 0
+                    self.in_air = False
+                    self.jumping = False
+                    self.set_animation("run")
+
+                else:
+                    # we are below the block
+                    dy = block.rect.bottom - self.rect.top
+                    self.velocity_y = 0
 
         self.position.x += dx
+        self.position.y += dy
         self.rect.left = int(self.position.x)
         self.rect.top = int(self.position.y)
+
+    def die(self):
+        self.sounds["oof"].play()
+        self.set_animation("dead")
+        self.alive = False
 
     def draw(self, screen: pygame.Surface, scroll_offset: float):
         if not self.alive:
             self.rect.top -= 2
-            
+
         draw_rect = self.rect.move(-scroll_offset, 0)
+        
+        if self.alive and draw_rect.centerx < 50:
+            self.die()
 
         self.current_animation.draw(screen, draw_rect, self.alive)
         # pygame.draw.rect(screen, "white", self.rect, 1)
