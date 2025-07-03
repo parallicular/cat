@@ -17,70 +17,56 @@ class Game:
         pygame.init()
         pygame.mixer.init()
         pygame.mixer.music.load("sounds/ruins.mp3")
+        pygame.mixer.music.set_volume(0.3)
         pygame.mixer.music.play()
 
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
+        
         self.background = Background()
-        self.blocks = self.create_blocks()
-        self.obstacles = []
-        cat_pos: pygame.Vector2 = pygame.Vector2(SCREEN_WIDTH // 4, GROUND_LEVEL - BLOCK_SIZE)
+        
+        self.obstacles: list[Obstacle] = []
+        
+        cat_pos = pygame.Vector2(SCREEN_WIDTH // 4, GROUND_LEVEL - BLOCK_SIZE)
         self.cat = Cat(cat_pos)
         self.scroll_offset = 0.0
-        self.generated_until = float(self.screen.get_width())
-        self.scroll_speed = -0.1
+        self.scroll_speed = 0.1
+        self.generated_until = 0
+        self.fireball_chance = 0.5
         
-    def create_blocks(self):
-        blocks: list[Block] = []
-        offset_x = 0
-        while offset_x < self.screen.get_width():
-            position = pygame.Vector2(offset_x, GROUND_LEVEL)
+        self.blocks: list[Block] = []
+        self.generate_world()
+        
+    def generate_world(self):
+        while self.generated_until < self.scroll_offset + self.screen.get_width():
+            position = pygame.Vector2(self.generated_until, GROUND_LEVEL)
             block = Block(position)
-            blocks.append(block)
-            offset_x += BLOCK_SIZE
-        return blocks
-    
-    def update(self):
-        self.scroll_speed -= 0.003
-        self.scroll_speed = max(self.scroll_speed, -12)
-        
-        # generate world
-        self.generated_until += self.scroll_speed
-        if self.generated_until < self.screen.get_width():
-            new_pos = pygame.Vector2(self.generated_until, GROUND_LEVEL)
-            new_obstacle = Block(new_pos)
-            self.blocks.append(new_obstacle)
-            
-            if random() < 0.5:
+            self.blocks.append(block)
+            self.generated_until += BLOCK_SIZE
+            if random() < self.fireball_chance:
                 row_index = int(7 * random())
                 new_pos = pygame.Vector2(self.generated_until, BLOCK_SIZE * row_index)
                 new_obstacle = Obstacle(new_pos)
                 self.obstacles.append(new_obstacle)
+            self.fireball_chance = min(0.2, self.fireball_chance + 0.001)
 
-            self.generated_until += BLOCK_SIZE
+    def update(self):
+        self.scroll_speed += 0.003
+        self.scroll_speed = min(self.scroll_speed, 12)
         
-        self.background.update(self.scroll_speed)
-        new_blocks = []
-        for block in self.blocks:
-            if block.update(self.scroll_speed):
-                new_blocks.append(block)
-        self.blocks = new_blocks
-
-        new_obstacles = []
-        for obstacle in self.obstacles:
-            if obstacle.update(self.scroll_speed):
-                new_obstacles.append(obstacle)
-        self.obstacles = new_obstacles
-
+        self.scroll_offset += self.scroll_speed
+        
+        self.generate_world()
+        
         self.cat.update(self.scroll_speed, self.obstacles)
 
     def draw(self):
-        self.background.draw(self.screen)
+        self.background.draw(self.screen, self.scroll_offset)
         for block in self.blocks:
-            block.draw(self.screen)
+            block.draw(self.screen, self.scroll_offset)
         for obstacle in self.obstacles:
-            obstacle.draw(self.screen)
-        self.cat.draw(self.screen)
+            obstacle.draw(self.screen, self.scroll_offset)
+        self.cat.draw(self.screen, self.scroll_offset)
 
     def run(self):
         running = True
@@ -95,11 +81,9 @@ class Game:
                 running = False
 
             if self.cat.alive:
-                self.cat.handle_events(events)
-                
-                self.cat.handle_pressed_keys(pressed_keys)
-
                 self.update()
+            elif pressed_keys[pygame.K_r]:
+                self.cat = Cat(pygame.Vector2(SCREEN_WIDTH // 4, GROUND_LEVEL - BLOCK_SIZE))
 
             self.draw()
 
