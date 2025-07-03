@@ -17,7 +17,7 @@ class Game:
         pygame.init()
         pygame.mixer.init()
         pygame.mixer.music.load("sounds/ruins.mp3")
-        # pygame.mixer.music.play()
+        pygame.mixer.music.play()
 
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
