@@ -1,5 +1,5 @@
 import pygame
-from obstacle import Obstacle
+from gameEntity import Obstacle
 from animation import Animation
 
 
@@ -49,7 +49,7 @@ class Cat:
                 self.set_animation("highjump")
             if pressed_keys[pygame.K_UP]:
                 self.jumping = True
-                self.velocity_y = -20
+                self.velocity_y = -24
                 self.set_animation("jump")
 
         self.position.x += scroll_speed

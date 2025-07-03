@@ -1,8 +1,8 @@
 import pygame
 from cat import Cat
 from background import Background
-from block import Block
-from obstacle import Obstacle
+from gameEntity import Block
+from gameEntity import Obstacle
 from random import random
 
 SCREEN_WIDTH = 1400
@@ -44,7 +44,7 @@ class Game:
             self.blocks.append(block)
             self.generated_until += BLOCK_SIZE
             if random() < self.fireball_chance:
-                row_index = int(7 * random())
+                row_index = int(7 - abs(7 * (random() + random()) - 7))
                 new_pos = pygame.Vector2(self.generated_until, BLOCK_SIZE * row_index)
                 new_obstacle = Obstacle(new_pos)
                 self.obstacles.append(new_obstacle)
@@ -83,7 +83,7 @@ class Game:
             if self.cat.alive:
                 self.update()
             elif pressed_keys[pygame.K_r]:
-                self.cat = Cat(pygame.Vector2(SCREEN_WIDTH // 4, GROUND_LEVEL - BLOCK_SIZE))
+                self.cat = Cat(pygame.Vector2(self.scroll_offset + SCREEN_WIDTH // 4, GROUND_LEVEL - BLOCK_SIZE))
 
             self.draw()
 
