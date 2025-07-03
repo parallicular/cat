@@ -1,11 +1,12 @@
 import pygame
+from pygame import Surface
 
 
 class Background:
     def __init__(self):
         self.image = pygame.image.load("images/small.png")
         
-    def draw(self, screen: pygame.Surface, scroll_offset: float):
+    def draw(self, screen: Surface, scroll_offset: float):
         offset_y = 0
         while offset_y < screen.get_height():
             offset_x = (-scroll_offset % screen.get_width()) - screen.get_width()

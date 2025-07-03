@@ -1,5 +1,5 @@
 import pygame
-from pygame import Rect, Vector2
+from pygame import Rect, Vector2, Surface
 from gameEntity import Obstacle, Block
 from animation import Animation
 
@@ -99,7 +99,7 @@ class Cat:
         self.set_animation("dead")
         self.alive = False
 
-    def draw(self, screen: pygame.Surface, scroll_offset: float):
+    def draw(self, screen: Surface, scroll_offset: float):
         if not self.alive:
             self.rect.top -= 2
 

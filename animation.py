@@ -1,4 +1,5 @@
 import pygame
+from pygame import Surface, Rect
 import os
 
 
@@ -21,7 +22,7 @@ class Animation:
         self.current_frame = 0
         self.frame_counter = 0
         
-    def draw(self, screen: pygame.Surface, rect: pygame.Rect, animate: bool = True):
+    def draw(self, screen: Surface, rect: Rect, animate: bool = True):
         
         image = self.images[self.current_frame]
         
