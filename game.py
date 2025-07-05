@@ -11,6 +11,9 @@ SCREEN_HEIGHT = 800
 FPS = 60
 BLOCK_SIZE = 100
 GROUND_LEVEL = SCREEN_HEIGHT - BLOCK_SIZE
+ENDPOINT = 10000 
+WALK_TO_ENDPOINT = ENDPOINT - 100
+STOP_GENERATING_OBSTACLES = ENDPOINT - 1000 
 
 
 class Game:
@@ -39,36 +42,54 @@ class Game:
         self.blocks: list[Block] = []
         self.generate_world()
         
+        self.win = False
+
     def generate_world(self):
         while self.generated_until < self.scroll_offset + self.screen.get_width():
             position = Vector2(self.generated_until, GROUND_LEVEL)
             block = Block(position)
             self.blocks.append(block)
             
-            if random() < self.block_chance:
-                row_index = int(7 - abs(7 * (random() + random()) - 7))
-                position = Vector2(self.generated_until, BLOCK_SIZE * row_index)
-                block = Block(position)
-                self.blocks.append(block)
-                
-            elif random() < self.fireball_chance:
-                row_index = int(7 - abs(7 * (random() + random()) - 7))
-                new_pos = Vector2(self.generated_until, BLOCK_SIZE * row_index)
-                new_obstacle = Obstacle(new_pos)
-                self.obstacles.append(new_obstacle)
-            self.fireball_chance = min(0.2, self.fireball_chance + 0.001)
-            
+            allow_obstacles = self.generated_until < STOP_GENERATING_OBSTACLES
+
+            if allow_obstacles:
+                if random() < self.block_chance:
+                    row_index = int(7 - abs(7 * (random() + random()) - 7))
+                    position = Vector2(self.generated_until, BLOCK_SIZE * row_index)
+                    block = Block(position)
+                    self.blocks.append(block)
+                    
+                if random() < self.fireball_chance:
+                    row_index = int(7 - abs(7 * (random() + random()) - 7))
+                    new_pos = Vector2(self.generated_until, BLOCK_SIZE * row_index)
+                    new_obstacle = Obstacle(new_pos)
+                    self.obstacles.append(new_obstacle)
+                self.fireball_chance = min(0.2, self.fireball_chance + 0.001)
+
             self.generated_until += BLOCK_SIZE
 
+
     def update(self):
-        self.scroll_speed += 0.003
-        self.scroll_speed = min(self.scroll_speed, 12)
+        if not self.win:
+            self.scroll_speed += 0.003
+            self.scroll_speed = min(self.scroll_speed, 12)
         
-        self.scroll_offset += self.scroll_speed
-        
+            self.scroll_offset += self.scroll_speed
+
+        # print(f"game: {self.scroll_offset}")
+
+        if self.scroll_offset >= ENDPOINT:
+            self.cat.won = True
+            self.scroll_speed = 0
+
+        elif self.scroll_offset >= WALK_TO_ENDPOINT and self.cat.alive and not self.cat.in_air:
+            self.cat.safe = True
+            self.scroll_speed = 1
+
         self.generate_world()
         
         self.cat.update(self.scroll_speed, self.obstacles, self.blocks)
+
 
     def draw(self):
         self.background.draw(self.screen, self.scroll_offset)
@@ -77,6 +98,7 @@ class Game:
         for obstacle in self.obstacles:
             obstacle.draw(self.screen, self.scroll_offset)
         self.cat.draw(self.screen, self.scroll_offset)
+
 
     def run(self):
         running = True

@@ -3,6 +3,7 @@ from pygame import Rect, Vector2, Surface
 from gameEntity import Obstacle, Block
 from animation import Animation
 
+FPS = 60
 
 class Cat:
     def __init__(self, position: Vector2) -> None:
@@ -11,7 +12,9 @@ class Cat:
             "run": Animation("run", 5, 7),
             "highjump": Animation("jump", 5, 15),
             "jump": Animation("jump", 5, 10),
-            "dead": Animation("dead", 1, 10)
+            "dead": Animation("dead", 1, 10),
+            "loaf": Animation("loaf", 1, 10),
+            "lick": Animation("lick", 5, 10)
         }
         self.current_animation = self.animations["walk"]
         self.velocity_y = 0
@@ -22,9 +25,16 @@ class Cat:
         self.ground_level = self.rect.top
         self.alive = True
         self.sounds = {
-            "oof": pygame.mixer.Sound("sounds/oof.mp3")
+            "oof": pygame.mixer.Sound("sounds/oof.mp3"),
+            "meow": pygame.mixer.Sound("sounds/meow.mp3")
         }
         self.sounds["oof"].set_volume(0.5)
+
+        self.safe = False
+        self.won = False
+        self.has_licked = False
+        self.has_meowed = False
+
                 
     def set_animation(self, name: str):
         if self.current_animation.name == name:
@@ -34,6 +44,14 @@ class Cat:
         self.current_animation.reset()
     
     def update(self, scroll_speed: float, obstacles: list[Obstacle], blocks: list[Block]):
+        if self.won:
+            self.win()
+            return
+        
+        if self.safe:
+            self.in_winning_distance()
+            return
+
         if scroll_speed < -2.0:
             self.set_animation("run")
 
@@ -98,6 +116,24 @@ class Cat:
         self.sounds["oof"].play()
         self.set_animation("dead")
         self.alive = False
+
+    def in_winning_distance(self): 
+        self.set_animation("walk")
+        self.position.x += 2  
+        self.rect.left = int(self.position.x)
+
+    def win(self):
+            if not self.has_meowed:
+                self.sounds["meow"].play()
+                self.has_meowed = True # so the meow doesn't loop
+            if not self.has_licked:
+                self.set_animation("lick")
+                self.has_licked = True
+                self.lick_timer = 0 
+            elif self.lick_timer < FPS * 3:
+                self.lick_timer += 1 # counter is just there for delay - to make sure the licking animation plays before the loaf
+            else:
+                self.set_animation("loaf")
 
     def draw(self, screen: Surface, scroll_offset: float):
         if not self.alive:
