@@ -41,8 +41,7 @@ class Game:
         
         self.blocks: list[Block] = []
         self.generate_world()
-        
-        self.win = False
+
 
     def generate_world(self):
         while self.generated_until < self.scroll_offset + self.screen.get_width():
@@ -70,11 +69,10 @@ class Game:
 
 
     def update(self):
-        if not self.win:
-            self.scroll_speed += 0.003
-            self.scroll_speed = min(self.scroll_speed, 12)
-        
-            self.scroll_offset += self.scroll_speed
+        self.scroll_speed += 0.003
+        self.scroll_speed = min(self.scroll_speed, 12)
+    
+        self.scroll_offset += self.scroll_speed
 
         # print(f"game: {self.scroll_offset}")
 
