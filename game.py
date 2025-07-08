@@ -14,6 +14,7 @@ GROUND_LEVEL = SCREEN_HEIGHT - BLOCK_SIZE
 ENDPOINT = 10000 
 WALK_TO_ENDPOINT = ENDPOINT - 100
 STOP_GENERATING_OBSTACLES = ENDPOINT - 1000 
+FONT_SIZE = 48
 
 
 class Game:
@@ -50,11 +51,13 @@ class Game:
         pause_bar.fill((0, 0, 0)) 
         self.screen.blit(pause_bar, (0, SCREEN_HEIGHT - BLOCK_SIZE)) # black color fills the bottom part of the screen only
 
-        font = pygame.font.SysFont(None, 24)
-        restart = font.render('R = Restart', True, (255, 255, 255), None)
-        quit = font.render('Q = Quit', True, (255, 255, 255), None)
-        self.screen.blit(restart, (SCREEN_WIDTH / 4, SCREEN_HEIGHT - BLOCK_SIZE / 2))
-        self.screen.blit(quit, (SCREEN_WIDTH / 2, SCREEN_HEIGHT - BLOCK_SIZE / 2))
+        font = pygame.font.SysFont(None, FONT_SIZE)
+        restart = font.render('[R] Restart', True, (255, 255, 255), None)
+        pause = font.render('PAUSED', True, (255, 255, 0), None)
+        quit = font.render('[Q] Quit', True, (255, 255, 255), None)
+        self.screen.blit(restart, (SCREEN_WIDTH / 4, SCREEN_HEIGHT - BLOCK_SIZE / 1.5))
+        self.screen.blit(quit, (SCREEN_WIDTH / 2, SCREEN_HEIGHT - BLOCK_SIZE / 1.5))
+        self.screen.blit(pause, (SCREEN_WIDTH / 2 - pause.get_width() / 2, SCREEN_HEIGHT / 2 - FONT_SIZE // 2))
 
 
     def generate_world(self):
@@ -120,22 +123,18 @@ class Game:
                 events = pygame.event.get()
                 for event in events:
                     if event.type == pygame.QUIT:
-                        running = False
+                        return 'q'
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             self.pause = not self.pause
                     
-                    if self.pause:
-                        if event.type == pygame.KEYDOWN:
+                        elif self.pause:
                             if event.key == pygame.K_r:
-                                pass
-                                # restart the game
+                                return 'r'
                             elif event.key == pygame.K_q:
-                                running = False
+                                return 'q'
 
-                pressed_keys = pygame.key.get_pressed()
-
-      
+                # pressed_keys = pygame.key.get_pressed()
 
                 if not self.pause:
                     if self.cat.alive:
@@ -150,8 +149,13 @@ class Game:
 
 
 def main():
-    game = Game()
-    game.run()
+    while True:
+        game = Game()
+        choice = game.run()
+        if choice == 'q':
+            break
+        elif choice == 'r':
+            continue
     pygame.quit()
 
 
