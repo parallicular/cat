@@ -42,6 +42,12 @@ class Game:
         self.blocks: list[Block] = []
         self.generate_world()
 
+        self.pause = False
+
+    def draw_pause_screen(self):
+        pause_bar = pygame.Surface((SCREEN_WIDTH, BLOCK_SIZE), pygame.SRCALPHA)
+        pause_bar.fill((0, 0, 0)) 
+        self.screen.blit(pause_bar, (0, SCREEN_HEIGHT - BLOCK_SIZE)) # black color fills the bottom part of the screen only
 
     def generate_world(self):
         while self.generated_until < self.scroll_offset + self.screen.get_width():
@@ -101,24 +107,28 @@ class Game:
     def run(self):
         running = True
         while running:
-            events = pygame.event.get()
-            for event in events:
-                if event.type == pygame.QUIT:
-                    running = False
+                if self.pause:
+                    self.draw_pause_screen()
+                events = pygame.event.get()
+                for event in events:
+                    if event.type == pygame.QUIT:
+                        running = False
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            self.pause = not self.pause
 
-            pressed_keys = pygame.key.get_pressed()
-            if pressed_keys[pygame.K_ESCAPE]:
-                running = False
+                pressed_keys = pygame.key.get_pressed()
 
-            if self.cat.alive:
-                self.update()
-            elif pressed_keys[pygame.K_r]:
-                self.cat = Cat(Vector2(self.scroll_offset + SCREEN_WIDTH // 4, GROUND_LEVEL - BLOCK_SIZE))
+                if not self.pause:
+                    if self.cat.alive:
+                        self.update()
+                    elif pressed_keys[pygame.K_r]:
+                        self.cat = Cat(Vector2(self.scroll_offset + SCREEN_WIDTH // 4, GROUND_LEVEL - BLOCK_SIZE))
 
-            self.draw()
+                    self.draw()
 
-            pygame.display.flip()
-            self.clock.tick(FPS)
+                pygame.display.flip()
+                self.clock.tick(FPS)
 
 
 def main():
