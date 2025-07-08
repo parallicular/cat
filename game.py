@@ -49,7 +49,7 @@ class Game:
     def draw_pause_screen(self):
         pause_bar = pygame.Surface((SCREEN_WIDTH, BLOCK_SIZE), pygame.SRCALPHA)
         pause_bar.fill((0, 0, 0)) 
-        self.screen.blit(pause_bar, (0, SCREEN_HEIGHT - BLOCK_SIZE)) # black color fills the bottom part of the screen only
+        self.screen.blit(pause_bar, (0, SCREEN_HEIGHT - BLOCK_SIZE)) # black color fills the bottom part of the screen only 
 
         font = pygame.font.SysFont(None, FONT_SIZE)
         restart = font.render('[R] Restart', True, (255, 255, 255), None)
@@ -59,6 +59,19 @@ class Game:
         self.screen.blit(quit, (SCREEN_WIDTH / 2, SCREEN_HEIGHT - BLOCK_SIZE / 1.5))
         self.screen.blit(pause, (SCREEN_WIDTH / 2 - pause.get_width() / 2, SCREEN_HEIGHT / 2 - FONT_SIZE // 2))
 
+
+    def draw_end_screen(self):
+        end_screen = pygame.Surface((SCREEN_WIDTH, BLOCK_SIZE), pygame.SRCALPHA)
+        end_screen.fill((0, 0, 0)) 
+        self.screen.blit(end_screen, (0, SCREEN_HEIGHT - BLOCK_SIZE)) 
+
+        font = pygame.font.SysFont(None, FONT_SIZE)
+        restart = font.render('[R] Restart', True, (255, 255, 255), None)
+        youwon = font.render('You won! The kitty made it home safely.', True, (0, 0, 255), None)
+        quit = font.render('[Q] Quit', True, (255, 255, 255), None)
+        self.screen.blit(restart, (SCREEN_WIDTH / 4, SCREEN_HEIGHT - BLOCK_SIZE / 1.5))
+        self.screen.blit(quit, (SCREEN_WIDTH / 2, SCREEN_HEIGHT - BLOCK_SIZE / 1.5))
+        self.screen.blit(youwon, (SCREEN_WIDTH / 2 - youwon.get_width() / 2, SCREEN_HEIGHT / 2 - FONT_SIZE // 2))
 
     def generate_world(self):
         while self.generated_until < self.scroll_offset + self.screen.get_width():
@@ -128,7 +141,7 @@ class Game:
                         if event.key == pygame.K_ESCAPE:
                             self.pause = not self.pause
                     
-                        elif self.pause:
+                        elif self.pause or self.cat.won:
                             if event.key == pygame.K_r:
                                 return 'r'
                             elif event.key == pygame.K_q:
@@ -143,6 +156,9 @@ class Game:
                     #     self.cat = Cat(Vector2(self.scroll_offset + SCREEN_WIDTH // 4, GROUND_LEVEL - BLOCK_SIZE))
 
                     self.draw()
+
+                if self.cat.won:
+                    self.draw_end_screen()
 
                 pygame.display.flip()
                 self.clock.tick(FPS)
