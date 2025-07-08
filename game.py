@@ -124,14 +124,24 @@ class Game:
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             self.pause = not self.pause
+                    
+                    if self.pause:
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_r:
+                                pass
+                                # restart the game
+                            elif event.key == pygame.K_q:
+                                running = False
 
                 pressed_keys = pygame.key.get_pressed()
+
+      
 
                 if not self.pause:
                     if self.cat.alive:
                         self.update()
-                    elif pressed_keys[pygame.K_r]:
-                        self.cat = Cat(Vector2(self.scroll_offset + SCREEN_WIDTH // 4, GROUND_LEVEL - BLOCK_SIZE))
+                    # elif pressed_keys[pygame.K_r]:
+                    #     self.cat = Cat(Vector2(self.scroll_offset + SCREEN_WIDTH // 4, GROUND_LEVEL - BLOCK_SIZE))
 
                     self.draw()
 
