@@ -19,6 +19,7 @@ STOP_GENERATING_OBSTACLES = ENDPOINT - 1000
 class Game:
     def __init__(self) -> None:
         pygame.init()
+        pygame.font.init()
         pygame.mixer.init()
         pygame.mixer.music.load("sounds/ruins.mp3")
         pygame.mixer.music.set_volume(0.3)
@@ -48,6 +49,13 @@ class Game:
         pause_bar = pygame.Surface((SCREEN_WIDTH, BLOCK_SIZE), pygame.SRCALPHA)
         pause_bar.fill((0, 0, 0)) 
         self.screen.blit(pause_bar, (0, SCREEN_HEIGHT - BLOCK_SIZE)) # black color fills the bottom part of the screen only
+
+        font = pygame.font.SysFont(None, 24)
+        restart = font.render('R = Restart', True, (255, 255, 255), None)
+        quit = font.render('Q = Quit', True, (255, 255, 255), None)
+        self.screen.blit(restart, (SCREEN_WIDTH / 4, SCREEN_HEIGHT - BLOCK_SIZE / 2))
+        self.screen.blit(quit, (SCREEN_WIDTH / 2, SCREEN_HEIGHT - BLOCK_SIZE / 2))
+
 
     def generate_world(self):
         while self.generated_until < self.scroll_offset + self.screen.get_width():
